@@ -1,14 +1,16 @@
 import 'dart:convert';
+import 'package:codeforces/ContestStanding.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
 // Define the ProblemSet widget
 class ContestPage extends StatefulWidget {
-  const ContestPage({Key? key}) : super(key: key);
+   ContestPage({Key? key}) : super(key: key);
 
   @override
   State<ContestPage> createState() => _ContestPageState();
+
 }
 
 Future<GetContest> fetchContests(int start, int count) async {
@@ -32,6 +34,8 @@ class _ContestPageState extends State<ContestPage> {
   bool _hasMore = true;
   int _start = 0;
   final int _count = 20;
+  TextStyle labelStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 15,color: Colors.black);
+  TextStyle valueStyle = TextStyle(fontSize: 15,color: Colors.black);
 
   @override
   void initState() {
@@ -127,21 +131,95 @@ class _ContestPageState extends State<ContestPage> {
                       final url = "https://codeforces.com/contest/${contest.id}";
                       _launchURL(url);
                     },
-                    child: Card(
-                      elevation: 2,
-                      margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
-                      child: ListTile(
-                        title: Text(contest.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                        subtitle: Text(
-                          'Contest ID: ${contest.id}\n'
-                              'Phase: ${contest.phase}\n'
-                              'Date: ${formatDate(contest.startTimeSeconds)}\n'
-                              'Start Time: ${formatTime(contest.startTimeSeconds)}\n'
-                              'Duration: ${formatDuration(contest.durationSeconds)}',
-                          style: TextStyle(fontSize: 15),
+              child: Card(
+                elevation: 5, // Increased elevation for better shadow effect
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // Rounded corners
+                ),
+                margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12), // Adjusted margins
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(16), // Increased padding for better spacing
+                  tileColor: Colors.grey[200], // Added background color for ListTile
+                  trailing: contest.phase != 'BEFORE'
+                      ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      IconButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ContestStanding(
+                                id: contest.id,
+                                contestName: contest.name,
+                              ),
+                            ),
+                          );
+                        },
+                        icon: Icon(
+                          Icons.rate_review,
+                          color: Theme.of(context).primaryColor, // Icon color to match theme
                         ),
                       ),
+                    ],
+                  )
+                      : SizedBox.shrink(), // Changed Text("") to SizedBox.shrink() for better spacing
+                  title: Text(
+                    contest.name,
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black87, // Consistent text color
                     ),
+                  ),
+                  subtitle: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                          text: 'Contest ID: ',
+                          style: labelStyle,
+                        ),
+                        TextSpan(
+                          text: '${contest.id}\n',
+                          style: valueStyle,
+                        ),
+                        TextSpan(
+                          text: 'Phase: ',
+                          style: labelStyle,
+                        ),
+                        TextSpan(
+                          text: '${contest.phase == 'BEFORE' ? 'Upcoming' : contest.phase}\n',
+                          style: valueStyle,
+                        ),
+                        TextSpan(
+                          text: 'Date: ',
+                          style: labelStyle,
+                        ),
+                        TextSpan(
+                          text: '${formatDate(contest.startTimeSeconds)}\n',
+                          style: valueStyle,
+                        ),
+                        TextSpan(
+                          text: 'Start Time: ',
+                          style: labelStyle,
+                        ),
+                        TextSpan(
+                          text: '${formatTime(contest.startTimeSeconds)}\n',
+                          style: valueStyle,
+                        ),
+                        TextSpan(
+                          text: 'Duration: ',
+                          style: labelStyle,
+                        ),
+                        TextSpan(
+                          text: '${formatDuration(contest.durationSeconds)}',
+                          style: valueStyle,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              )
                   );
                 },
               ),
