@@ -40,6 +40,15 @@ dependencies:
   url_launcher: ^6.3.0
   flutter_html: ^2.2.1
   html: ^0.15.4
+  flutter_launcher_icons: ^0.11.0
+
+flutter_launcher_icons:
+  #  image_path: "assets/images/icon-128x128.png"
+  image_path_android: "assets/icon.webp"
+  android: true # can specify file name here e.g. "ic_launcher"
+  ios: true # can specify file name here e.g. "My-Launcher-Icon"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+  background_color_ios: "#ffffff"
 
 dev_dependencies:
   flutter_test:
@@ -64,8 +73,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - images/a_dot_burr.jpeg
+assets:
+  - assets/icon.webp
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
