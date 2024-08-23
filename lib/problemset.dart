@@ -244,7 +244,6 @@ class _ProblemSetState extends State<ProblemSet> {
                                 return Chip(
                                   labelStyle: TextStyle(fontSize: 10),
                                   label: Text(tag.split('.').last.replaceAll('_', ' ').capitalize()),
-                                  backgroundColor: Colors.deepPurpleAccent.withOpacity(0.2),
                                 );
                               }).toList(),
                             ),
