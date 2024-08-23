@@ -86,8 +86,11 @@ class _UserInfoPageState extends State<UserInfoPage> {
                   final info = snapshot.data!;
                   final result = info.result[0];
                   return Card(
-                    elevation: 4,
-                    margin: EdgeInsets.symmetric(vertical: 8),
+                    elevation: 5, // Increased elevation for better shadow effect
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10), // Rounded corners
+                    ),
+                    margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12), // Adjusted margins
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Row(

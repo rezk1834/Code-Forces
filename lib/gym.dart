@@ -128,8 +128,11 @@ class _GymListPageState extends State<GymListPage> {
                       _launchURL(url);
                     },
                     child: Card(
-                      elevation: 2,
-                      margin: EdgeInsets.symmetric(vertical: 4, horizontal: 8),
+                      elevation: 5, // Increased elevation for better shadow effect
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10), // Rounded corners
+                      ),
+                      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 12), // Adjusted margins
                       child: ListTile(
                         title: Text(gymContest.name, style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                         subtitle: Text(

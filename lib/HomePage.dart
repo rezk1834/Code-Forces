@@ -4,9 +4,10 @@ import 'package:codeforces/problemset.dart';
 import 'package:codeforces/rating%20color.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
-import 'BlogComments.dart';
+import 'UserInfo.dart';
 import 'UsersPage.dart';
+import 'blogentry.dart';
+import 'gym.dart';
 
 
 
@@ -63,85 +64,101 @@ class _HomePageState extends State<HomePage> {
       ),
       drawer: Drawer(
         child: ListView(
+          padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(child: Center(child: Text("Code Forces"))),
-
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ProblemSet()),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Text(
-                    "Problem Set",
-                    style: TextStyle(fontSize: 25),
-                  ),
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColor,
+              ),
+              child: Center(
+                child: Image.asset(
+                  "assets/icon.png",
+                  width: 100,
+                  height: 100,
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => ContestPage()),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Text(
-                    "Contests",
-                    style: TextStyle(fontSize: 25),
-                  ),
-                ),
+            ListTile(
+              leading: Icon(Icons.person, size: 30, color: Theme.of(context).primaryColor),
+              title: Text(
+                "User Info",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               ),
-            ), Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => CommentPage()),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Text(
-                    "Blog Comments",
-                    style: TextStyle(fontSize: 25),
-                  ),
-                ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserInfoPage()),
+                );
+              },
+            ),ListTile(
+              leading: Icon(Icons.code, size: 30, color: Theme.of(context).primaryColor),
+              title: Text(
+                "Problem Set",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ProblemSet()),
+                );
+              },
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => UserPage()),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: Text(
-                    "Users",
-                    style: TextStyle(fontSize: 25),
-                  ),
-                ),
+            ListTile(
+              leading: Icon(Icons.fitness_center, size: 30, color: Theme.of(context).primaryColor),
+              title: Text(
+                "Gym",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
               ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GymListPage()),
+                );
+              },
             ),
-
+            ListTile(
+              leading: Icon(Icons.article, size: 30, color: Theme.of(context).primaryColor),
+              title: Text(
+                "Blog",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => BlogEntryPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.event, size: 30, color: Theme.of(context).primaryColor),
+              title: Text(
+                "Contests",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ContestPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.people, size: 30, color: Theme.of(context).primaryColor),
+              title: Text(
+                "Users",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UserPage()),
+                );
+              },
+            ),
           ],
         ),
-
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
