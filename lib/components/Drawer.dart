@@ -1,11 +1,12 @@
+import 'package:codeforces/LoginPage.dart';
 import 'package:flutter/material.dart';
 
-import '../ContestPage.dart';
-import '../UserInfo.dart';
-import '../UsersPage.dart';
-import '../blogentry.dart';
-import '../gym.dart';
-import '../problemset.dart';
+import '../Screens/ContestPage.dart';
+import '../UserLookup.dart';
+import '../Screens/AllUsersPage.dart';
+import '../Screens/blogentry.dart';
+import '../Screens/gym.dart';
+import '../Screens/problemset.dart';
 
 class TheDrawer extends StatelessWidget {
   const TheDrawer({super.key});
@@ -31,13 +32,13 @@ class TheDrawer extends StatelessWidget {
           ListTile(
             leading: Icon(Icons.person, size: 30, color: Theme.of(context).primaryColor),
             title: Text(
-              "User Info",
+              "User Lookup",
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
             ),
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => UserInfoPage()),
+                MaterialPageRoute(builder: (context) => UserInfoPage(handle: '', )),
               );
             },
           ),ListTile(
@@ -50,6 +51,19 @@ class TheDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => ProblemSet()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.event, size: 30, color: Theme.of(context).primaryColor),
+            title: Text(
+              "Contests",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ContestPage()),
               );
             },
           ),
@@ -80,19 +94,6 @@ class TheDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: Icon(Icons.event, size: 30, color: Theme.of(context).primaryColor),
-            title: Text(
-              "Contests",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ContestPage()),
-              );
-            },
-          ),
-          ListTile(
             leading: Icon(Icons.people, size: 30, color: Theme.of(context).primaryColor),
             title: Text(
               "Users",
@@ -102,6 +103,19 @@ class TheDrawer extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => UserPage()),
+              );
+            },
+          ),
+          ListTile(
+            leading: Icon(Icons.exit_to_app, size: 30, color: Theme.of(context).primaryColor),
+            title: Text(
+              "Sign Out",
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+            ),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginPage()),
               );
             },
           ),
