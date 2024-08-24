@@ -1,4 +1,5 @@
-import 'package:codeforces/problemset.dart';
+import 'package:codeforces/LoginPage.dart';
+import 'package:codeforces/Screens/problemset.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'HomePage.dart';
@@ -25,7 +26,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: HomePage(),
+      home: LoginPage(),
     );
   }
 }
