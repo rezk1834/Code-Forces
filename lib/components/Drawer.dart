@@ -2,7 +2,7 @@ import 'package:codeforces/LoginPage.dart';
 import 'package:flutter/material.dart';
 
 import '../Screens/ContestPage.dart';
-import '../UserLookup.dart';
+import '../Screens/UserLookup.dart';
 import '../Screens/AllUsersPage.dart';
 import '../Screens/blogentry.dart';
 import '../Screens/gym.dart';
