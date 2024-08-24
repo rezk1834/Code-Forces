@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:codeforces/rating%20color.dart';
+import 'package:codeforces/components/rating%20color.dart';
 
 class ContestStanding extends StatefulWidget {
   final int id;

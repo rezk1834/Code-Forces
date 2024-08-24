@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+TextStyle labelStyle = TextStyle(fontWeight: FontWeight.bold, fontSize: 15,color: Colors.black);
+TextStyle valueStyle = TextStyle(fontSize: 15,color: Colors.black);
 // Function to get color based on rating
 Color getColorForRating(int rating) {
   if (rating >= 2600) {
@@ -22,22 +23,13 @@ Color getColorForRating(int rating) {
     return Colors.grey; // Newbie
   }
 }
-
-// Example usage in a widget
-class RatingColorWidget extends StatelessWidget {
-  final int rating;
-
-  RatingColorWidget({required this.rating});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      color: getColorForRating(rating),
-      child: Text(
-        'Rating: $rating',
-        style: TextStyle(color: Colors.white),
-      ),
-    );
+Color getVerdictColor(String verdict) {
+  switch (verdict) {
+    case 'OK':
+      return Colors.green;
+    case 'WRONG_ANSWER':
+      return Colors.red;
+    default:
+      return Colors.grey[700]!;
   }
 }
