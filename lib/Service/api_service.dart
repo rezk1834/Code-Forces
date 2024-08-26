@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-// Global Variables
+
 Future<GetInfo>? futureInfo;
 Future<Contests>? futureContests;
 Future<Status>? futureStatus;
@@ -18,31 +18,9 @@ Future<GetInfo> getInfo(String handle) async {
   }
 }
 
-Future<Contests> getContests(String handle) async {
-  final response = await http.get(Uri.https('codeforces.com', '/api/user.rating', {'handle': handle}));
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    return Contests.fromJson(data);
-  } else {
-    throw Exception('Failed to load contests');
-  }
-}
 
-Future<Status> getStatus(String handle) async {
-  final response = await http.get(Uri.https('codeforces.com', '/api/user.status', {
-    'handle': handle,
-    'from': '1',
-    'count': '100',
-  }));
 
-  if (response.statusCode == 200) {
-    final data = jsonDecode(response.body);
-    return Status.fromJson(data);
-  } else {
-    throw Exception('Failed to load Status');
-  }
-}
 
 
 class GetInfo {
@@ -115,6 +93,17 @@ class Result {
   }
 }
 
+Future<Contests> getContests(String handle) async {
+  final response = await http.get(Uri.https('codeforces.com', '/api/user.rating', {'handle': handle}));
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return Contests.fromJson(data);
+  } else {
+    throw Exception('Failed to load contests');
+  }
+}
+
 class Contests {
   String status;
   List<ResultContest> result;
@@ -164,6 +153,21 @@ class ResultContest {
   }
 }
 
+Future<Status> getStatus(String handle) async {
+  final response = await http.get(Uri.https('codeforces.com', '/api/user.status', {
+    'handle': handle,
+    'from': '1',
+    'count': '1000',
+  }));
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return Status.fromJson(data);
+  } else {
+    throw Exception('Failed to load Status');
+  }
+}
+
 class Status {
   String status;
   List<ResultStatus> result;
@@ -190,8 +194,7 @@ class ResultStatus {
   int creationTimeSeconds;
   Problem problem;
   String programmingLanguage;
-  String verdict;
-
+  String? verdict;
 
   ResultStatus({
     required this.id,
@@ -199,7 +202,7 @@ class ResultStatus {
     required this.creationTimeSeconds,
     required this.problem,
     required this.programmingLanguage,
-    required this.verdict,
+    this.verdict,
   });
 
   factory ResultStatus.fromJson(Map<String, dynamic> json) {
@@ -209,27 +212,26 @@ class ResultStatus {
       creationTimeSeconds: json['creationTimeSeconds'],
       problem: Problem.fromJson(json['problem']),
       programmingLanguage: json['programmingLanguage'],
-      verdict: json['verdict'],
+      verdict: json['verdict'],  // Nullable field
     );
   }
 }
 
 class Problem {
-
   String index;
   String name;
-  int rating;
+  int? rating;
   List<String> tags;
 
   Problem({
     required this.index,
     required this.name,
-    required this.rating,
+    this.rating,
     required this.tags,
   });
 
   factory Problem.fromJson(Map<String, dynamic> json) {
-    var tagsList = json['tags'].cast<String>();
+    var tagsList = json['tags']?.cast<String>() ?? [];
     return Problem(
       index: json['index'],
       name: json['name'],
@@ -238,3 +240,111 @@ class Problem {
     );
   }
 }
+
+
+
+class GetContest {
+  String status;
+  List<ContestResult> result;
+
+  GetContest({
+    required this.status,
+    required this.result,
+  });
+
+  factory GetContest.fromJson(Map<String, dynamic> json) {
+    var list = json['result'] as List;
+    List<ContestResult> resultList = list.map((i) => ContestResult.fromJson(i)).toList();
+
+    return GetContest(
+      status: json['status'],
+      result: resultList,
+    );
+  }
+}
+
+class ContestResult {
+  int id;
+  String name;
+  String phase;
+  int durationSeconds;
+  int startTimeSeconds;
+  int relativeTimeSeconds;
+
+  ContestResult({
+    required this.id,
+    required this.name,
+    required this.phase,
+    required this.durationSeconds,
+    required this.startTimeSeconds,
+    required this.relativeTimeSeconds,
+  });
+
+  factory ContestResult.fromJson(Map<String, dynamic> json) {
+    return ContestResult(
+      id: json['id'],
+      name: json['name'],
+      phase: json['phase'],
+      durationSeconds: json['durationSeconds'],
+      startTimeSeconds: json['startTimeSeconds'],
+      relativeTimeSeconds: json['relativeTimeSeconds'],
+    );
+  }
+}
+
+
+
+class GetProblemSet {
+  String status;
+  List<ProblemSetResults> result;
+
+  GetProblemSet({
+    required this.status,
+    required this.result,
+  });
+
+  factory GetProblemSet.fromJson(Map<String, dynamic> json) {
+    var list = json['result']['problems'] as List;
+    List<ProblemSetResults> resultList = list.map((i) => ProblemSetResults.fromJson(i)).toList();
+
+    return GetProblemSet(
+      status: json['status'],
+      result: resultList,
+    );
+  }
+}
+
+class ProblemSetResults {
+  int contestID;
+  String name;
+  String index;
+  List<String> tags;
+  int? rating;
+
+  ProblemSetResults({
+    required this.contestID,
+    required this.name,
+    required this.index,
+    required this.tags,
+    this.rating,
+  });
+
+  factory ProblemSetResults.fromJson(Map<String, dynamic> json) {
+    return ProblemSetResults(
+      contestID: json['contestId'],
+      name: json['name'],
+      index: json['index'],
+      rating: json['rating'],
+      tags: List<String>.from(json['tags']),
+    );
+  }
+}
+
+extension StringCapitalize on String {
+  String capitalize() {
+    if (this.isEmpty) return this;
+    return '${this[0].toUpperCase()}${this.substring(1)}';
+  }
+}
+
+

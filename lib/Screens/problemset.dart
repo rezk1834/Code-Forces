@@ -1,9 +1,10 @@
 import 'dart:convert';
+import 'package:codeforces/Service/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 
-// Define the ProblemSet widget
+
 class ProblemSet extends StatefulWidget {
   const ProblemSet({Key? key}) : super(key: key);
 
@@ -11,13 +12,12 @@ class ProblemSet extends StatefulWidget {
   State<ProblemSet> createState() => _ProblemSetState();
 }
 
-
 Future<GetProblemSet> getProblemSet(String handle, int start, int count) async {
   final response = await http.get(Uri.https(
     'codeforces.com',
     '/api/problemset.problems',
     {
-     'tags':'',
+      'tags': '',
       'handles': handle,
       'start': start.toString(),
       'count': count.toString(),
@@ -32,19 +32,19 @@ Future<GetProblemSet> getProblemSet(String handle, int start, int count) async {
   }
 }
 
-// Define the state for ProblemSet
 class _ProblemSetState extends State<ProblemSet> {
   late Future<GetProblemSet> _futureProblemSet;
-  List<Result> _problems = [];
+  List<ProblemSetResults> _problems = [];
   bool _isLoading = false;
   bool _hasMore = true;
   int _start = 0;
   final int _count = 20;
-  final String _handle = 'your_handle_here';  // Replace with your handle
-  String _sortBy = 'rating'; // Field for sorting
+  final String _handle = 'your_handle_here';
+  String _sortBy = 'rating';
   bool _ascending = false;
   int? _minRating;
   int? _maxRating;
+  List<String> _selectedTags = [];
 
   @override
   void initState() {
@@ -65,7 +65,7 @@ class _ProblemSetState extends State<ProblemSet> {
         _start += _count;
         _problems.addAll(problemSet.result);
         _hasMore = problemSet.result.length == _count;
-        _sortProblems(); // Sort problems after fetching
+        _applyFiltersAndSorting();
       });
     } catch (e) {
       print('Error loading problems: $e');
@@ -76,29 +76,155 @@ class _ProblemSetState extends State<ProblemSet> {
     }
   }
 
-  void _sortProblems() {
-    if (_sortBy == 'rating') {
-      _problems.sort((a, b) {
-        final comparison = (b.rating ?? 0).compareTo(a.rating ?? 0);
-        return _ascending ? comparison : -comparison;
-      });
-    } else {
-      _problems.sort((a, b) {
-        final comparison = a.name.compareTo(b.name);
-        return _ascending ? comparison : -comparison;
-      });
-    }
-  }
-  void _filterProblems() {
+  void _applyFiltersAndSorting() {
     setState(() {
       _problems = _problems.where((problem) {
-        final rating = problem.rating;
-        return (rating != null) &&
-            (_minRating == null || rating >= _minRating!) &&
+        final rating = problem.rating ?? 0;
+        final matchesRating = (_minRating == null || rating >= _minRating!) &&
             (_maxRating == null || rating <= _maxRating!);
+
+        final matchesTags = _selectedTags.isEmpty ||
+            _selectedTags.any((tag) => problem.tags.contains(tag));
+
+        return matchesRating && matchesTags;
       }).toList();
-      _sortProblems();
+
+      if (_sortBy == 'rating') {
+        _problems.sort((a, b) {
+          final comparison = (b.rating ?? 0).compareTo(a.rating ?? 0);
+          return _ascending ? comparison : -comparison;
+        });
+      } else {
+        _problems.sort((a, b) {
+          final comparison = a.name.compareTo(b.name);
+          return _ascending ? comparison : -comparison;
+        });
+      }
     });
+  }
+
+  void _openFilterBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        Map<String, bool> selectedTagsMap = {
+          'implementation': false,
+          'math': false,
+          'greedy': false,
+          'dp': false,
+          'data structures': false,
+          'brute force': false,
+          'constructive algorithms': false,
+          'graphs': false,
+          'sortings': false,
+          'binary search': false,
+          'dfs and similar': false,
+          'trees': false,
+          'strings': false,
+          'number theory': false,
+          'combinatorics': false,
+          'geometry': false,
+          'bitmasks': false,
+          'two pointers': false,
+          'dsu': false,
+          'shortest paths': false,
+          'probabilities': false,
+          'divide and conquer': false,
+          'hashing': false,
+          'games': false,
+          'flows': false,
+          'interactive': false,
+          'matrices': false,
+          'string suffix structures': false,
+          'fft': false,
+          'graph matchings': false,
+          'ternary search': false,
+          'expression parsing': false,
+          'meet-in-the-middle': false,
+          '2-sat': false,
+          'chinese remainder theorem': false,
+          'schedules': false,
+        };
+
+        _selectedTags.forEach((tag) {
+          if (selectedTagsMap.containsKey(tag)) {
+            selectedTagsMap[tag] = true;
+          }
+        });
+
+        TextEditingController minRatingController = TextEditingController();
+        TextEditingController maxRatingController = TextEditingController();
+
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      "Select Tags",
+                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 16),
+                    Wrap(
+                      spacing: 10.0,
+                      runSpacing: 10.0,
+                      children: selectedTagsMap.keys.map((String tag) {
+                        return FilterChip(
+                          label: Text(tag.capitalize()),
+                          selected: selectedTagsMap[tag]!,
+                          onSelected: (bool value) {
+                            setState(() {
+                              selectedTagsMap[tag] = value;
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: minRatingController,
+                      decoration: InputDecoration(
+                        labelText: 'Min Rating',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    SizedBox(height: 16),
+                    TextField(
+                      controller: maxRatingController,
+                      decoration: InputDecoration(
+                        labelText: 'Max Rating',
+                        border: OutlineInputBorder(),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          _minRating = int.tryParse(minRatingController.text);
+                          _maxRating = int.tryParse(maxRatingController.text);
+                          _selectedTags = selectedTagsMap.entries
+                              .where((entry) => entry.value)
+                              .map((entry) => entry.key)
+                              .toList();
+                        });
+                        _applyFiltersAndSorting();
+                        Navigator.pop(context);
+                      },
+                      child: Text('Apply Filters'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   void _launchURL(String url) async {
@@ -107,6 +233,7 @@ class _ProblemSetState extends State<ProblemSet> {
       throw 'Could not launch $url';
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -120,48 +247,29 @@ class _ProblemSetState extends State<ProblemSet> {
         centerTitle: true,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.filter_list),
+            onPressed: _openFilterBottomSheet,
+          ),
+          IconButton(
+            icon: Icon(
+              _ascending ? Icons.arrow_upward : Icons.arrow_downward,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              setState(() {
+                _ascending = !_ascending;
+                _applyFiltersAndSorting();
+              });
+            },
+          ),
+        ],
       ),
+
       body: Column(
         children: [
-          // Sorting and filtering controls
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: DropdownButton<String>(
-                    value: _sortBy,
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _sortBy = newValue!;
-                        _sortProblems();
-                      });
-                    },
-                    items: <String>['rating', 'name'].map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value.capitalize()),
-                      );
-                    }).toList(),
-                  ),
-                ),
-                SizedBox(width: 16),
-                IconButton(
-                  icon: Icon(
-                    _ascending ? Icons.arrow_upward : Icons.arrow_downward,
-                    color: Theme.of(context).primaryColor,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _ascending = !_ascending;
-                      _sortProblems();
-                    });
-                  },
-                ),
-              ],
-            ),
-          ),
-          // Rating filter controls
+
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
@@ -193,7 +301,7 @@ class _ProblemSetState extends State<ProblemSet> {
                   icon: Icon(Icons.search, color: Theme.of(context).primaryColor),
                   onPressed: () {
                     setState(() {
-                      _filterProblems();
+                      _applyFiltersAndSorting();
                     });
                   },
                 ),
@@ -264,60 +372,4 @@ class _ProblemSetState extends State<ProblemSet> {
     );
   }
 
-}
-
-// Define the GetProblemSet class
-class GetProblemSet {
-  String status;
-  List<Result> result;
-
-  GetProblemSet({
-    required this.status,
-    required this.result,
-  });
-
-  factory GetProblemSet.fromJson(Map<String, dynamic> json) {
-    var list = json['result']['problems'] as List;
-    List<Result> resultList = list.map((i) => Result.fromJson(i)).toList();
-
-    return GetProblemSet(
-      status: json['status'],
-      result: resultList,
-    );
-  }
-}
-
-// Define the Result class
-class Result {
-  int contestID;
-  String name;
-  String index;
-  List<String> tags;
-  int? rating;
-
-  Result({
-    required this.contestID,
-    required this.name,
-    required this.index,
-    required this.tags,
-    this.rating,
-  });
-
-  factory Result.fromJson(Map<String, dynamic> json) {
-    return Result(
-      contestID: json['contestId'],
-      name: json['name'],
-      index: json['index'],
-      rating: json['rating'],
-      tags: List<String>.from(json['tags']),
-    );
-  }
-}
-
-// Extension for capitalizing the first letter of a string
-extension StringCapitalize on String {
-  String capitalize() {
-    if (this.isEmpty) return this;
-    return '${this[0].toUpperCase()}${this.substring(1)}';
-  }
 }
