@@ -22,9 +22,9 @@ class MyApp extends StatelessWidget {
       title: 'Code Forces',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        fontFamily: 'Roboto',
       ),
       home: LoginPage(),
     );
